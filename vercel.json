@@ -3,19 +3,21 @@
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "outputDirectory": "frontend/my-app/dist",
-  "rewrites": [
+  "headers": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/index.html"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Permissions-Policy", "value": "camera=(self), geolocation=(self)" }
+      ]
     }
   ],
+  "rewrites": [{ "source": "/:path*", "destination": "/index.html" }],
   "functions": {
     "api/**/*.js": {
-      "maxDuration": 30
+      "maxDuration": 10
     }
   }
 }

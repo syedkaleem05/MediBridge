@@ -1,48 +1,86 @@
 # MediBridge
 
-Hackathon-ready pharmacy medicine discovery + inventory management MVP.
+Pharmacy medicine discovery and inventory MVP: **MongoDB + Mongoose**, **Vite + React**, and **serverless `/api`** routes packaged for **Vercel**.
+
+## Repository layout
+
+- `frontend/my-app/` — React (Vite) workspace app; build output goes to `dist/`.
+- `api/` — Vercel serverless handlers (`/api/<fileName>` → `api/<fileName>.js`).
+- `lib/`, `models/` — Shared DB/auth helpers and Mongoose schemas.
+- `dev/apiServer.js` — Local runner that executes the same handlers as Vercel (dev only).
+
+Root `npm install` installs **root + workspace** dependencies; API code imports packages from the **repo root**.
 
 ## Local development
 
-### 1) Environment variables
+### Environment
 
-Create a `.env` in the repo root:
+Create `.env` in the **repository root**:
 
-- `MONGODB_URI`
-- `JWT_SECRET`
+- `MONGODB_URI` — MongoDB Atlas (or local) URI
+- `JWT_SECRET` — Strong secret used to sign JWTs
 
-This repo already includes a starter `.env` file — just replace `MONGODB_URI` with your MongoDB Atlas URI.
+See [.env.example](.env.example). Optional frontend override: copy `frontend/my-app/.env.example` to `.env.development.local` **only if** you need `VITE_API_URL`.
 
-Frontend variables live in `frontend/my-app/.env` (already included for local dev).
+Do **not** commit real `.env` files.
 
-### 2) Install
+### Commands
 
 ```bash
 npm install
-npm --workspace frontend/my-app install
-```
-
-### 3) Run (web + API)
-
-```bash
 npm run dev
 ```
 
-- Web (Vite): `http://localhost:5173`
-- API (local Vercel-style runner): `http://localhost:3000/api/*`
-
-### 4) Seed demo data
+- Frontend: `http://localhost:5173` (Vite)
+- API: `http://localhost:3001/api/*` (`dev/apiServer.js`, proxied from Vite as `/api`)
 
 ```bash
-npm run seed
+npm run seed    # Demo data — see script before running on shared/prod databases
+npm run build   # Vite production build → frontend/my-app/dist
 ```
 
-### Demo logins
+Demo logins (after seed): `owner@demo.com`, `user@demo.com`, password **`Demo@123`**.
 
-- **Owner**: `owner@demo.com` / `Demo@123`
-- **User**: `user@demo.com` / `Demo@123`
+Quick check: `GET http://localhost:3001/api/health`
 
-### Quick API check
+---
 
-- `GET /api/health`
+## Deploying to Vercel (single project)
+
+Frontend and backend should **stay together** in one Vercel project: static SPA + `/api` serverless on the **same origin** avoids CORS and keeps `axios` pointing at **`/api`**.
+
+Import the repo, use defaults from `vercel.json` (install `npm install`, build `npm run build`, output `frontend/my-app/dist`) or mirror these in the dashboard.
+
+### Environment variables
+
+| Variable | Required | Purpose |
+|---------|----------|---------|
+| `MONGODB_URI` | Yes | Atlas connection string |
+| `JWT_SECRET` | Yes | JWT signing secret (long, random) |
+| `ALLOWED_ORIGINS` | No | Only if the UI is hosted on a **different origin** than the API; comma-separated list, or `*` for wide-open demos |
+
+Optional: `MONGODB_MAX_POOL_SIZE`, `MONGODB_SERVER_SELECTION_MS` — see [.env.example](.env.example).
+
+### Atlas checklist
+
+In MongoDB Atlas: **Database Access** (user/password), **Network Access** IP allowlist (often `0.0.0.0/0` for serverless, or tightened rules if you prefer).
+
+### Preview deployments
+
+Define the **same secrets** under Preview — otherwise PR previews cannot reach the DB.
+
+### Split deployments (advanced)
+
+Only if React is built elsewhere set `ALLOWED_ORIGINS` on the API project and **`VITE_API_URL`** when building the frontend to the deployed API origin (must include `/api` path suffix as used in axios `baseURL`).
+
+---
+
+## Troubleshooting builds
+
+Run locally:
+
+```bash
+npm ci
+npm run build
+```
 

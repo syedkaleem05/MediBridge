@@ -2,12 +2,10 @@
   "name": "medibridge",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "frontend/my-app"
-  ],
+  "workspaces": ["frontend/my-app"],
   "engines": {
-  "node": "20.x"
-},
+    "node": ">=20"
+  },
   "scripts": {
     "dev:web": "npm --workspace frontend/my-app run dev",
     "dev:api": "node dev/apiServer.js",

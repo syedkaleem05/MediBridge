@@ -11,10 +11,10 @@ async function handler(req, res) {
     if (req.method !== "GET") return methodNotAllowed(res);
     await connectMongo();
 
-    const q = String(req.query?.q || "").trim();
-    if (!q) return ok(res, "Search", { suggestions: [], results: [] });
+    const rawQ = String(req.query?.q || "").trim().slice(0, 128);
+    if (!rawQ) return ok(res, "Search", { suggestions: [], results: [] });
 
-    const rx = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    const rx = new RegExp(rawQ.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
 
     const meds = await Medicine.find({ medicineName: rx }).limit(10).lean();
     const suggestions = meds.map((m) => m.medicineName);
