@@ -5,6 +5,9 @@
   "workspaces": [
     "frontend/my-app"
   ],
+  "engines": {
+  "node": "20.x"
+},
   "scripts": {
     "dev:web": "npm --workspace frontend/my-app run dev",
     "dev:api": "node dev/apiServer.js",
