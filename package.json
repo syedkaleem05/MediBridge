@@ -1,0 +1,24 @@
+{
+  "name": "medibridge",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "frontend/my-app"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace frontend/my-app run dev",
+    "dev:api": "node dev/apiServer.js",
+    "dev": "npm-run-all -p dev:api dev:web",
+    "seed": "node scripts/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.18.0"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "vercel": "^44.2.0"
+  }
+}
