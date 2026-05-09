@@ -1,3 +1,4 @@
+import { apiRoute } from "../lib/apiAdapter.js";
 import { connectMongo } from "../lib/mongodb.js";
 import { requireAuth } from "../lib/auth.js";
 import { User } from "../models/User.js";
@@ -5,7 +6,7 @@ import { Medicine } from "../models/Medicine.js";
 import { Inventory } from "../models/Inventory.js";
 import { handleError, methodNotAllowed, ok } from "../lib/response.js";
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   try {
     if (req.method !== "POST") return methodNotAllowed(res);
     await connectMongo();
@@ -88,3 +89,4 @@ export default async function handler(req, res) {
   }
 }
 
+export default apiRoute(handler);

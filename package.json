@@ -9,6 +9,7 @@
     "dev:web": "npm --workspace frontend/my-app run dev",
     "dev:api": "node dev/apiServer.js",
     "dev": "npm-run-all -p dev:api dev:web",
+    "build": "npm --workspace frontend/my-app run build",
     "seed": "node scripts/seed.js"
   },
   "dependencies": {
