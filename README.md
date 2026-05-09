@@ -4,7 +4,7 @@ Pharmacy medicine discovery and inventory MVP: **MongoDB + Mongoose**, **Vite + 
 
 ## Repository layout
 
-- `frontend/my-app/` — React (Vite) workspace app; build output goes to `dist/`.
+- `frontend/my-app/` — React (Vite) workspace app; Vite emits to **`frontend/my-app/dist`**, then `npm run build` **copies that to repo-root `/dist`** for Vercel (see `scripts/stage-root-dist.mjs`).
 - `api/` — Vercel serverless handlers (`/api/<fileName>` → `api/<fileName>.js`).
 - `lib/`, `models/` — Shared DB/auth helpers and Mongoose schemas.
 - `dev/apiServer.js` — Local runner that executes the same handlers as Vercel (dev only).
@@ -36,7 +36,7 @@ npm run dev
 
 ```bash
 npm run seed    # Demo data — see script before running on shared/prod databases
-npm run build   # Vite production build → frontend/my-app/dist
+npm run build   # Workspace Vite build, then staging → frontend/my-app/dist and ./dist (Vercel)
 ```
 
 Demo logins (after seed): `owner@demo.com`, `user@demo.com`, password **`Demo@123`**.
@@ -49,7 +49,14 @@ Quick check: `GET http://localhost:3001/api/health`
 
 Frontend and backend should **stay together** in one Vercel project: static SPA + `/api` serverless on the **same origin** avoids CORS and keeps `axios` pointing at **`/api`**.
 
-Import the repo, use defaults from `vercel.json` (install `npm install`, build `npm run build`, output `frontend/my-app/dist`) or mirror these in the dashboard.
+### Critical Vercel project settings
+
+- **Root Directory:** `.` — the repository root (**not** `frontend/my-app`). Required so Vercel can see **`api/`**, **`lib/`**, **`models/`**, root `package.json`, and **`dist/`** after the build stages.
+- **Build Command:** `npm run build` (same as `vercel.json`; do not swap for `vite build` unless you redesign the staging step).
+- **Output Directory:** `dist` — either leave the default (**`dist`**) or clear any override that expects Vite output only under the workspace folder. **`vercel.json`** sets **`"outputDirectory": "dist"`** to match staged output.
+- **Install Command:** `npm install`.
+
+Import the repo once with the above paths; mismatched Dashboard overrides (usually **`Output Directory = dist`** with **nested** build output left under `frontend/my-app/` only) cause: *No Output Directory named ‘dist’ found*.
 
 ### Environment variables
 
